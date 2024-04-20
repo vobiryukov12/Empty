@@ -34,7 +34,7 @@
 
   async function updateCurrency2() {
     await fetchRates(currency2)
-    convert2to1()
+    convert1to2()
   }
 
   onMount(() => fetchRates(currency1))

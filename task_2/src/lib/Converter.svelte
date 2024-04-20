@@ -10,38 +10,38 @@
   let currency1: string = 'USD'
   let currency2: string = 'RUB'
 
-  async function fetchRates() {
+  async function fetchRates(currency: string) {
     const res = await fetch(
-      `https://api.exchangerate-api.com/v4/latest/${currency1}`
+      `https://api.exchangerate-api.com/v4/latest/${currency}`
     )
     const data: ExchangeRateResponse = await res.json()
     rates = data.rates
     // currencies = Object.keys(rates); // для всех валют
   }
 
-  function convert(direction: string = '1to2') {
-    if (direction === '1to2') {
-      count2 = Number((count1 * (rates[currency2] || 0)).toFixed(2))
-    } else {
-      count1 = Number((count2 / (rates[currency2] || 1)).toFixed(2))
-    }
+  function convert1to2() {
+    count2 = Number(((count1 * rates[currency2]) / rates[currency1]).toFixed(2))
   }
 
-  function updateCurrency(value: string, num: number) {
-    if (num === 1) {
-      fetchRates()
-      convert('2to1')
-    } else {
-      convert('1to2')
-      fetchRates()
-    }
+  function convert2to1() {
+    count1 = Number(((count2 * rates[currency1]) / rates[currency2]).toFixed(2))
   }
 
-  onMount(fetchRates)
+  async function updateCurrency1() {
+    await fetchRates(currency1)
+    convert1to2()
+  }
+
+  async function updateCurrency2() {
+    await fetchRates(currency2)
+    convert2to1()
+  }
+
+  onMount(() => fetchRates(currency1))
 </script>
 
 <div>
-  <select bind:value={currency1} on:change={() => updateCurrency(currency1, 1)}>
+  <select bind:value={currency1} on:change={updateCurrency1}>
     {#each currencies as currency}
       {#if currency !== currency2}
         <option value={currency}>{currency}</option>
@@ -52,12 +52,12 @@
     type="number"
     bind:value={count1}
     on:input={() => {
-      convert('1to2')
+      convert1to2()
     }}
   />
 </div>
 <div>
-  <select bind:value={currency2} on:change={() => updateCurrency(currency2, 2)}>
+  <select bind:value={currency2} on:change={updateCurrency2}>
     {#each currencies as currency}
       {#if currency !== currency1}
         <option value={currency}>{currency}</option>
@@ -68,7 +68,7 @@
     type="number"
     bind:value={count2}
     on:input={() => {
-      convert('2to1')
+      convert2to1()
     }}
   />
 </div>

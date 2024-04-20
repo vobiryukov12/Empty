@@ -3,20 +3,22 @@
   import type { Rates, ExchangeRateResponse } from '../models/rates'
 
   let rates: Rates = {}
-  let count1: number = 0
+  let count1: number = 1
   let count2: number = 0
   let currencies: string[] = ['USD', 'RUB', 'EUR']
   // let currencies: string[] = []; // для всех валют
   let currency1: string = 'USD'
   let currency2: string = 'RUB'
 
-  async function fetchRates(currency: string) {
+  async function fetchRates(currency: string, mount?: boolean) {
     const res = await fetch(
       `https://api.exchangerate-api.com/v4/latest/${currency}`
     )
     const data: ExchangeRateResponse = await res.json()
     rates = data.rates
     // currencies = Object.keys(rates); // для всех валют
+
+    mount && convert1to2()
   }
 
   function convert1to2() {
@@ -37,7 +39,7 @@
     convert1to2()
   }
 
-  onMount(() => fetchRates(currency1))
+  onMount(() => fetchRates(currency1, true))
 </script>
 
 <div>

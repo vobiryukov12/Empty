@@ -1,0 +1,4 @@
+{
+  "plugins": ["eslint-plugin-svelte"],
+  "extends": ["prettier"]
+}

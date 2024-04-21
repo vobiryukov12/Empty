@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import type { Rates, ExchangeRateResponse } from '../models/rates'
+  import arrowChange from '../assets/arrow-change.svg'
 
   let rates: Rates = {}
   let count1: number = 1
@@ -34,9 +35,16 @@
     convert1to2()
   }
 
-  async function updateCurrency2() {
-    await fetchRates(currency2)
+  function updateCurrency2() {
     convert1to2()
+  }
+
+  function handleBtnClick() {
+    const tmpCurrency = currency1
+    currency1 = currency2
+    currency2 = tmpCurrency
+
+    updateCurrency1()
   }
 
   onMount(() => fetchRates(currency1, true))
@@ -73,6 +81,10 @@
       convert2to1()
     }}
   />
+  <div>{`1 ${currency1} = ${rates[currency2]} ${currency2}`}</div>
+  <button on:click={handleBtnClick}>
+    <img src={arrowChange} alt="Arrow Change" width="20" height="15" />
+  </button>
 </div>
 
 <style>
